@@ -604,6 +604,169 @@
 
 
 
+// import React, { useEffect, useState, useRef, useCallback } from 'react';
+// import BubbleBackground from './components/BubbleBackground';
+// import ChatMessage from './components/ChatMessage';
+// import SearchBar from './components/SearchBar';
+// import { groupByDate } from './utils/groupByDate';
+// import { FaArrowDown, FaArrowUp } from "react-icons/fa";
+// import { VariableSizeList as List } from 'react-window';
+// import debounce from 'lodash.debounce';
+
+// export default function App() {
+//   const [chatData, setChatData] = useState([]);
+//   const [filteredMessages, setFilteredMessages] = useState([]);
+//   const [listHeight, setListHeight] = useState(500);
+//   const listRef = useRef();
+
+//   // Calculate dynamic height safely for react-window
+//   useEffect(() => {
+//     const handleResize = () => {
+//       const calculatedHeight = window.innerHeight - 250; // Adjust as per your header and searchbar size
+//       setListHeight(calculatedHeight);
+//     };
+
+//     handleResize(); // initial calculation
+//     window.addEventListener('resize', handleResize);
+//     return () => window.removeEventListener('resize', handleResize);
+//   }, []);
+
+//   const convertInputDateToDataFormat = (inputDate) => {
+//     if (!inputDate) return null;
+//     const [year, month, day] = inputDate.split("-");
+//     return `${day}/${month}/${year.slice(-2)}`;
+//   };
+
+//   useEffect(() => {
+//     fetch('/chat.json')
+//       .then(res => res.json())
+//       .then(data => {
+//         const sortedData = data.sort((a, b) =>
+//           new Date(a.date.split('/').reverse().join('-')) - new Date(b.date.split('/').reverse().join('-'))
+//         );
+//         setChatData(sortedData);
+//       });
+//   }, []);
+
+//   const generateAllMessages = (data) => {
+//     const grouped = groupByDate(data);
+//     return Object.entries(grouped).flatMap(([date, msgs]) => [
+//       { type: 'date', date },
+//       ...msgs.map(msg => ({ type: 'msg', ...msg })),
+//     ]);
+//   };
+
+//   const allMessages = generateAllMessages(chatData);
+//   const messagesToRender = filteredMessages.length > 0 ? filteredMessages : allMessages;
+
+//   const handleSearch = useCallback(
+//     debounce((date, text) => {
+//       const formattedDate = convertInputDateToDataFormat(date);
+//       let foundIndex = -1;
+
+//       for (let i = 0; i < allMessages.length; i++) {
+//         const item = allMessages[i];
+
+//         if (item.type === 'date' && formattedDate) {
+//           if (item.date === formattedDate) {
+//             foundIndex = i;
+//             break;
+//           }
+//         }
+
+//         if (item.type === 'msg' && text) {
+//           if (item.message.toLowerCase().includes(text.toLowerCase())) {
+//             foundIndex = i;
+//             break;
+//           }
+//         }
+//       }
+
+//       if (foundIndex !== -1) {
+//         setFilteredMessages(allMessages);
+//         listRef.current.scrollToItem(foundIndex, 'start');
+//       } else {
+//         setFilteredMessages([]);
+//       }
+//     }, 300),
+//     [allMessages]
+//   );
+
+//   const getItemSize = index => {
+//     const item = messagesToRender[index];
+//     if (item.type === 'date') return 60;
+
+//     const messageLength = item.message.length;
+//     const lineHeight = 22;
+//     const charPerLine = 40;
+//     const estimatedLines = Math.ceil(messageLength / charPerLine);
+//     const baseHeight = 50;
+//     const padding = 40;
+
+//     return baseHeight + estimatedLines * lineHeight + padding;
+//   };
+
+//   const Row = ({ index, style }) => {
+//     const item = messagesToRender[index];
+
+//     if (item.type === 'date') {
+//       return (
+//         <div style={{ ...style, padding: '10px 0' }} className="flex justify-center">
+//           <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs sm:text-sm text-white shadow-md">
+//             {item.date}
+//           </span>
+//         </div>
+//       );
+//     }
+
+//     return (
+//       <div style={{ ...style, padding: '20px 15px' }}>
+//         <ChatMessage msg={item} />
+//       </div>
+//     );
+//   };
+
+//   const scrollToTop = () => listRef.current.scrollToItem(0, 'start');
+//   const scrollToBottom = () => listRef.current.scrollToItem(messagesToRender.length - 1, 'end');
+
+//   return (
+//     <div className="min-h-screen relative overflow-hidden">
+//       <BubbleBackground />
+
+//       <div className="absolute w-full p-2 sm:p-4 md:p-6 z-10">
+//         <SearchBar onSearch={handleSearch} />
+
+//         <div className="mt-6 p-2 sm:p-4 bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/20 h-[75vh] w-full max-w-7xl mx-auto overflow-hidden">
+//           <div className="h-full pr-1 overscroll-contain">
+//             <List
+//               height={listHeight}
+//               itemCount={messagesToRender.length}
+//               itemSize={getItemSize}
+//               width={'100%'}
+//               ref={listRef}
+//             >
+//               {Row}
+//             </List>
+//           </div>
+//         </div>
+
+//         <div className="flex justify-center gap-4 mt-3 mb-6 sm:mb-4">
+//           <button onClick={scrollToTop} className="p-3 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 shadow-lg hover:scale-110 transition">
+//             <FaArrowUp className="text-white text-lg" />
+//           </button>
+//           <button onClick={scrollToBottom} className="p-3 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 shadow-lg hover:scale-110 transition">
+//             <FaArrowDown className="text-white text-lg" />
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import BubbleBackground from './components/BubbleBackground';
 import ChatMessage from './components/ChatMessage';
@@ -618,15 +781,18 @@ export default function App() {
   const [filteredMessages, setFilteredMessages] = useState([]);
   const [listHeight, setListHeight] = useState(500);
   const listRef = useRef();
+  const containerRef = useRef();
 
-  // Calculate dynamic height safely for react-window
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device dynamically
   useEffect(() => {
     const handleResize = () => {
-      const calculatedHeight = window.innerHeight - 250; // Adjust as per your header and searchbar size
+      setIsMobile(window.innerWidth <= 768);
+      const calculatedHeight = window.innerHeight - 250;
       setListHeight(calculatedHeight);
     };
-
-    handleResize(); // initial calculation
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -666,14 +832,12 @@ export default function App() {
 
       for (let i = 0; i < allMessages.length; i++) {
         const item = allMessages[i];
-
         if (item.type === 'date' && formattedDate) {
           if (item.date === formattedDate) {
             foundIndex = i;
             break;
           }
         }
-
         if (item.type === 'msg' && text) {
           if (item.message.toLowerCase().includes(text.toLowerCase())) {
             foundIndex = i;
@@ -684,12 +848,17 @@ export default function App() {
 
       if (foundIndex !== -1) {
         setFilteredMessages(allMessages);
-        listRef.current.scrollToItem(foundIndex, 'start');
+        if (!isMobile) {
+          listRef.current.scrollToItem(foundIndex, 'start');
+        } else {
+          const target = document.getElementById(`msg-${foundIndex}`);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       } else {
         setFilteredMessages([]);
       }
     }, 300),
-    [allMessages]
+    [allMessages, isMobile]
   );
 
   const getItemSize = index => {
@@ -708,7 +877,6 @@ export default function App() {
 
   const Row = ({ index, style }) => {
     const item = messagesToRender[index];
-
     if (item.type === 'date') {
       return (
         <div style={{ ...style, padding: '10px 0' }} className="flex justify-center">
@@ -718,7 +886,6 @@ export default function App() {
         </div>
       );
     }
-
     return (
       <div style={{ ...style, padding: '20px 15px' }}>
         <ChatMessage msg={item} />
@@ -726,8 +893,21 @@ export default function App() {
     );
   };
 
-  const scrollToTop = () => listRef.current.scrollToItem(0, 'start');
-  const scrollToBottom = () => listRef.current.scrollToItem(messagesToRender.length - 1, 'end');
+  const scrollToTop = () => {
+    if (isMobile) {
+      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      listRef.current.scrollToItem(0, 'start');
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (isMobile) {
+      containerRef.current.scrollTo({ top: 999999, behavior: 'smooth' });
+    } else {
+      listRef.current.scrollToItem(messagesToRender.length - 1, 'end');
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -737,17 +917,41 @@ export default function App() {
         <SearchBar onSearch={handleSearch} />
 
         <div className="mt-6 p-2 sm:p-4 bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/20 h-[75vh] w-full max-w-7xl mx-auto overflow-hidden">
-          <div className="h-full pr-1 overscroll-contain">
-            <List
-              height={listHeight}
-              itemCount={messagesToRender.length}
-              itemSize={getItemSize}
-              width={'100%'}
-              ref={listRef}
-            >
-              {Row}
-            </List>
-          </div>
+
+          {/* MOBILE SIMPLE RENDER */}
+          {isMobile ? (
+            <div ref={containerRef} className="h-full overflow-y-auto">
+              {messagesToRender.map((item, index) => (
+                <div key={index} id={`msg-${index}`}>
+                  {item.type === 'date' ? (
+                    <div className="flex justify-center my-4">
+                      <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-xs sm:text-sm text-white shadow-md">
+                        {item.date}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="p-4">
+                      <ChatMessage msg={item} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            // DESKTOP VIRTUAL LIST
+            <div className="h-full pr-1 overscroll-contain">
+              <List
+                height={listHeight}
+                itemCount={messagesToRender.length}
+                itemSize={getItemSize}
+                width={'100%'}
+                ref={listRef}
+              >
+                {Row}
+              </List>
+            </div>
+          )}
+
         </div>
 
         <div className="flex justify-center gap-4 mt-3 mb-6 sm:mb-4">
@@ -758,8 +962,8 @@ export default function App() {
             <FaArrowDown className="text-white text-lg" />
           </button>
         </div>
+
       </div>
     </div>
   );
 }
-

@@ -765,8 +765,6 @@
 
 
 
-
-
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import BubbleBackground from './components/BubbleBackground';
 import ChatMessage from './components/ChatMessage';
@@ -775,20 +773,19 @@ import { groupByDate } from './utils/groupByDate';
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { VariableSizeList as List } from 'react-window';
 import debounce from 'lodash.debounce';
+import useIsMobile from './hooks/useIsMobile';  // 👈 import custom hook
 
 export default function App() {
+  const isMobile = useIsMobile();
+
   const [chatData, setChatData] = useState([]);
   const [filteredMessages, setFilteredMessages] = useState([]);
   const [listHeight, setListHeight] = useState(500);
   const listRef = useRef();
   const containerRef = useRef();
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detect mobile device dynamically
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
       const calculatedHeight = window.innerHeight - 250;
       setListHeight(calculatedHeight);
     };
@@ -864,14 +861,12 @@ export default function App() {
   const getItemSize = index => {
     const item = messagesToRender[index];
     if (item.type === 'date') return 60;
-
     const messageLength = item.message.length;
     const lineHeight = 22;
     const charPerLine = 40;
     const estimatedLines = Math.ceil(messageLength / charPerLine);
     const baseHeight = 50;
     const padding = 40;
-
     return baseHeight + estimatedLines * lineHeight + padding;
   };
 
@@ -918,7 +913,6 @@ export default function App() {
 
         <div className="mt-6 p-2 sm:p-4 bg-white/10 backdrop-blur-md rounded-xl shadow-lg border border-white/20 h-[75vh] w-full max-w-7xl mx-auto overflow-hidden">
 
-          {/* MOBILE SIMPLE RENDER */}
           {isMobile ? (
             <div ref={containerRef} className="h-full overflow-y-auto">
               {messagesToRender.map((item, index) => (
@@ -938,7 +932,6 @@ export default function App() {
               ))}
             </div>
           ) : (
-            // DESKTOP VIRTUAL LIST
             <div className="h-full pr-1 overscroll-contain">
               <List
                 height={listHeight}
@@ -962,7 +955,6 @@ export default function App() {
             <FaArrowDown className="text-white text-lg" />
           </button>
         </div>
-
       </div>
     </div>
   );
